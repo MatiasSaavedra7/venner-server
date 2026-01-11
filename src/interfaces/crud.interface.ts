@@ -1,5 +1,5 @@
 export interface ICrudRepository<T> {
-  findAll(): Promise<T[]>;
+  findAll(options?: any): Promise<T[] | { products: T[]; total: number }>;
   findById(id: number): Promise<T | null>;
   create(data: Partial<T>): Promise<T>;
   update(id: number, data: Partial<T>): Promise<T | null>;

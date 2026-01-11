@@ -37,7 +37,9 @@ export class ProductController extends BaseController {
         sort: sort as string | undefined,
       };
 
-      const paginatedProducts = await this.productService.getAllProducts(options);
+      const paginatedProducts = await this.productService.getAllProducts(
+        options
+      );
       this.sendSuccess(res, paginatedProducts);
     } catch (error) {
       this.sendError(res, "Error al obtener los productos", 500, error);

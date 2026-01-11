@@ -9,7 +9,7 @@ export abstract class BaseRepository<T> implements ICrudRepository<T> {
     this.db = pool;
   }
 
-  abstract findAll(): Promise<T[]>;
+  abstract findAll(options?: any): Promise<T[] | { products: T[]; total: number }>;
   abstract findById(id: number): Promise<T | null>;
   abstract create(data: Partial<T>): Promise<T>;
   abstract update(id: number, data: Partial<T>): Promise<T | null>;

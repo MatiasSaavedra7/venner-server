@@ -21,6 +21,8 @@ export const TOKEN_SECRET = getEnv("TOKEN_SECRET");
 export const ADMIN_EMAIL = getEnv("ADMIN_EMAIL");
 export const ADMIN_PASSWORD = getEnv("ADMIN_PASSWORD");
 
+export const FRONTEND_URL = getEnv("FRONTEND_URL");
+
 if (isNaN(DB_PORT)) {
   console.error("Error: La variable de entorno DB_PORT debe ser un número.");
   process.exit(1);

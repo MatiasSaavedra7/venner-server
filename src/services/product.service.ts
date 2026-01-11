@@ -27,7 +27,7 @@ export class ProductService {
     const { page, limit, filters, sort } = options;
     const offset = (page - 1) * limit;
 
-    const { products, total } = await this.productRepository.findAllWithPagination({
+    const result = await this.productRepository.findAll({
       limit,
       offset,
       search: filters.search,
@@ -36,6 +36,8 @@ export class ProductService {
       maxPrice: filters.maxPrice,
       sort,
     });
+
+    const { products, total } = result as { products: Product[]; total: number };
 
     return {
       totalProducts: total,
@@ -46,7 +48,10 @@ export class ProductService {
   }
 
   public async getWines(): Promise<any[]> {
-    return await this.productRepository.findWinesOrCategoryOne();
+    const result = await this.productRepository.findAll({
+      winesOrCategoryOne: true,
+    });
+    return result as any[];
   }
 
   public async getProductById(id: number): Promise<Product | null> {
