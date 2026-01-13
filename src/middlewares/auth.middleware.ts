@@ -13,6 +13,10 @@ declare global {
   }
 }
 
+export interface AuthRequest extends Request {
+  user: Omit<User, "password">;
+}
+
 export const authRequired = async (
   req: Request,
   res: Response,

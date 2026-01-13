@@ -177,4 +177,17 @@ export class ProductRepository extends BaseRepository<Product> {
       throw error;
     }
   }
+
+  public async updateStock(id: number, quantity: number): Promise<void> {
+    const sql = `
+      UPDATE products
+      SET stock = stock - $1
+      WHERE id = $2 AND stock >= $1;
+    `;
+    const result = await this.db.query(sql, [quantity, id]);
+    
+    if ((result.rowCount ?? 0) === 0) {
+        throw new Error(`No se pudo actualizar el stock del producto ${id}. Puede que no haya suficiente stock.`);
+    }
+  }
 }
