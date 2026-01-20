@@ -23,11 +23,11 @@ export class ProductService {
     this.wineRepository = new WineRepository();
   }
 
-  public async getAllProducts(options: IGetAllProductsOptions) {
+  public async getAll(options: IGetAllProductsOptions) {
     const { page, limit, filters, sort } = options;
     const offset = (page - 1) * limit;
 
-    const result = await this.productRepository.findAll({
+    const {products, total} = await this.productRepository.findAll({
       limit,
       offset,
       search: filters.search,
@@ -37,22 +37,23 @@ export class ProductService {
       sort,
     });
 
-    const { products, total } = result as { products: Product[]; total: number };
-
     return {
-      totalProducts: total,
-      totalPages: Math.ceil(total / limit),
-      currentPage: page,
+      meta: {
+        total: total,
+        per_page: limit,
+        current_page: page,
+        total_pages: Math.ceil(total / limit),
+      },
       products,
     };
   }
 
-  public async getWines(): Promise<any[]> {
-    const result = await this.productRepository.findAll({
-      winesOrCategoryOne: true,
-    });
-    return result as any[];
-  }
+  // public async getWines(): Promise<any[]> {
+  //   const result = await this.productRepository.findAll({
+  //     winesOrCategoryOne: true,
+  //   });
+  //   return result as any[];
+  // }
 
   public async getProductById(id: number): Promise<Product | null> {
     return await this.productRepository.findById(id);
