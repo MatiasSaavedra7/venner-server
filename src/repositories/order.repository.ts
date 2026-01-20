@@ -27,10 +27,19 @@ export class OrderRepository extends BaseRepository<Order> {
     return result.rows[0];
   }
 
-  public async findByUserId(userId: number): Promise<Order[]> {
+  public async findByUserId(userId: number): Promise<{ orders: Order[], total: number }> {
     const sql = "SELECT * FROM orders WHERE user_id = $1 AND deleted_at IS NULL ORDER BY created_at DESC;";
-    const result = await this.db.query(sql, [userId]);
-    return result.rows;
+    const countSql = "SELECT COUNT(*) FROM orders WHERE user_id = $1 AND deleted_at IS NULL;";
+
+    const [result, countResult] = await Promise.all([
+      this.db.query(sql, [userId]),
+      this.db.query(countSql, [userId])
+    ])
+
+    return {
+      total: Number(countResult.rows[0].count),
+      orders: result.rows,
+    };
   }
 
   public async create(data: Partial<Order>): Promise<Order> {
