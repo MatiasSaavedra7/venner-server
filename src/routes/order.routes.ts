@@ -15,6 +15,6 @@ router.get("/", authRequired, adminRequired, orderController.getAll as RequestHa
 router.get("/my-orders", authRequired, orderController.getByCurrentUser as RequestHandler);
 
 // GET: Obtener una orden por ID
-router.get("/:id", authRequired, orderController.getById);
+router.get("/:id", authRequired, orderController.getById as RequestHandler);
 
 export default router;

@@ -10,9 +10,6 @@ const productController = new ProductController();
 // GET: Obtener todos los Productos
 router.get("/", productController.getAll);
 
-// GET: Obtener solo Vinos
-router.get("/wines", productController.getWines);
-
 // GET: Obtener un Producto por ID
 router.get("/:id", productController.getById);
 
