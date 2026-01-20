@@ -13,9 +13,9 @@ export class CategoryController extends BaseController {
   public getAll = async (req: Request, res: Response) => {
     try {
       const categories = await this.categoryService.getAllCategories();
-      this.sendSuccess(res, categories);
+      this.success(res, categories, null, "Categorías obtenidas con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al obtener las categorías", 500, error);
+      this.error(res, "Error al obtener las categorías", 500, error);
     }
   };
 
@@ -24,23 +24,23 @@ export class CategoryController extends BaseController {
       const id = Number(req.params.id);
       const category = await this.categoryService.getCategoryById(id);
       if (!category) {
-        return this.sendError(res, "Categoría no encontrada", 404);
+        return this.error(res, "Categoría no encontrada", 404);
       }
-      this.sendSuccess(res, category);
+      this.success(res, category, null, "Categoría obtenida con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al obtener la categoría", 500, error);
+      this.error(res, "Error al obtener la categoría", 500, error);
     }
   };
 
   public create = async (req: Request, res: Response) => {
     try {
       const category = await this.categoryService.createCategory(req.body);
-      this.sendSuccess(res, category, "Categoría creada con éxito", 201);
+      this.success(res, category, null, "Categoría creada con éxito", 201);
     } catch (error: any) {
       if (error.message === "Name is required") {
-        return this.sendError(res, error.message, 400);
+        return this.error(res, error.message, 400);
       }
-      this.sendError(res, "Error al crear la categoría", 500, error);
+      this.error(res, "Error al crear la categoría", 500, error);
     }
   };
 
@@ -49,11 +49,11 @@ export class CategoryController extends BaseController {
       const id = Number(req.params.id);
       const category = await this.categoryService.updateCategory(id, req.body);
       if (!category) {
-        return this.sendError(res, "Categoría no encontrada", 404);
+        return this.error(res, "Categoría no encontrada", 404);
       }
-      this.sendSuccess(res, category, "Categoría actualizada con éxito");
+      this.success(res, category, null, "Categoría actualizada con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al actualizar la categoría", 500, error);
+      this.error(res, "Error al actualizar la categoría", 500, error);
     }
   };
 
@@ -63,15 +63,15 @@ export class CategoryController extends BaseController {
       const deleted = await this.categoryService.deleteCategory(id);
       if (!deleted) {
         // Could specify constraint violation vs not found
-        return this.sendError(
+        return this.error(
           res,
           "Categoría no encontrada o no pudo ser eliminada",
           404
         );
       }
-      this.sendSuccess(res, null, "Categoría eliminada con éxito");
+      this.success(res, null, null, "Categoría eliminada con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al eliminar la categoría", 500, error);
+      this.error(res, "Error al eliminar la categoría", 500, error);
     }
   };
 }

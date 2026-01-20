@@ -13,9 +13,9 @@ export class ImageProductController extends BaseController {
   public getAll = async (req: Request, res: Response) => {
     try {
       const images = await this.imageService.getAllImages();
-      this.sendSuccess(res, images);
+      this.success(res, images, null, "Imagenes obtenidas con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al obtener las imágenes", 500, error);
+      this.error(res, "Error al obtener las imágenes", 500, error);
     }
   };
 
@@ -24,23 +24,23 @@ export class ImageProductController extends BaseController {
       const id = Number(req.params.id);
       const image = await this.imageService.getImageById(id);
       if (!image) {
-        return this.sendError(res, "Imagen no encontrada", 404);
+        return this.error(res, "Imagen no encontrada", 404);
       }
-      this.sendSuccess(res, image);
+      this.success(res, image, null, "Imagen obtenida con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al obtener la imagen", 500, error);
+      this.error(res, "Error al obtener la imagen", 500, error);
     }
   };
 
   public create = async (req: Request, res: Response) => {
     try {
       const image = await this.imageService.createImage(req.body);
-      this.sendSuccess(res, image, "Imagen agregada con éxito", 201);
+      this.success(res, image, null, "Imagen agregada con éxito", 201);
     } catch (error: any) {
       if (error.message.includes("required")) {
-        return this.sendError(res, error.message, 400);
+        return this.error(res, error.message, 400);
       }
-      this.sendError(res, "Error al agregar la imagen", 500, error);
+      this.error(res, "Error al agregar la imagen", 500, error);
     }
   };
 
@@ -49,11 +49,11 @@ export class ImageProductController extends BaseController {
       const id = Number(req.params.id);
       const image = await this.imageService.updateImage(id, req.body);
       if (!image) {
-        return this.sendError(res, "Imagen no encontrada", 404);
+        return this.error(res, "Imagen no encontrada", 404);
       }
-      this.sendSuccess(res, image, "Imagen actualizada con éxito");
+      this.success(res, image, null, "Imagen actualizada con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al actualizar la imagen", 500, error);
+      this.error(res, "Error al actualizar la imagen", 500, error);
     }
   };
 
@@ -62,11 +62,11 @@ export class ImageProductController extends BaseController {
       const id = Number(req.params.id);
       const deleted = await this.imageService.deleteImage(id);
       if (!deleted) {
-        return this.sendError(res, "Imagen no encontrada", 404);
+        return this.error(res, "Imagen no encontrada", 404);
       }
-      this.sendSuccess(res, null, "Imagen eliminada con éxito");
+      this.success(res, null, null, "Imagen eliminada con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al eliminar la imagen", 500, error);
+      this.error(res, "Error al eliminar la imagen", 500, error);
     }
   };
 }

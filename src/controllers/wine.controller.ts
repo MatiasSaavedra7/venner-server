@@ -16,9 +16,9 @@ export class WineController extends BaseController {
   public getAll = async (req: Request, res: Response) => {
     try {
       const wines = await this.wineService.getAllWines();
-      this.sendSuccess(res, wines);
+      this.success(res, wines, null, "Vinos obtenidos con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al obtener los vinos", 500, error);
+      this.error(res, "Error al obtener los vinos", 500, error);
     }
   };
 
@@ -27,20 +27,20 @@ export class WineController extends BaseController {
       const productId = Number(req.params.id);
       const wine = await this.wineService.getWineByProductId(productId);
       if (!wine) {
-        return this.sendError(res, "Detalles del vino no encontrados", 404);
+        return this.error(res, "Detalles del vino no encontrados", 404);
       }
-      this.sendSuccess(res, wine);
+      this.success(res, wine, null, "Vino obtenido con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al obtener el vino", 500, error);
+      this.error(res, "Error al obtener el vino", 500, error);
     }
   };
 
   public create = async (req: Request, res: Response) => {
     try {
       const wine = await this.productService.createProduct(req.body);
-      this.sendSuccess(res, wine, "Vino creado con éxito", 201);
+      this.success(res, wine, null, "Vino creado con éxito", 201);
     } catch (error: any) {
-      this.sendError(res, "Error al crear el vino", 500, error);
+      this.error(res, "Error al crear el vino", 500, error);
     }
   };
 
@@ -49,11 +49,11 @@ export class WineController extends BaseController {
       const productId = Number(req.params.id);
       const wine = await this.wineService.updateWine(productId, req.body);
       if (!wine) {
-        return this.sendError(res, "Detalles del vino no encontrados", 404);
+        return this.error(res, "Detalles del vino no encontrados", 404);
       }
-      this.sendSuccess(res, wine, "Detalles del vino actualizados con éxito");
+      this.success(res, wine, null, "Detalles del vino actualizados con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al actualizar los detalles del vino", 500, error);
+      this.error(res, "Error al actualizar los detalles del vino", 500, error);
     }
   };
 
@@ -62,11 +62,11 @@ export class WineController extends BaseController {
       const productId = Number(req.params.id);
       const deleted = await this.wineService.deleteWine(productId);
       if (!deleted) {
-        return this.sendError(res, "Detalles del vino no encontrados", 404);
+        return this.error(res, "Detalles del vino no encontrados", 404);
       }
-      this.sendSuccess(res, null, "Detalles del vino eliminados con éxito");
+      this.success(res, null, null, "Detalles del vino eliminados con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al eliminar los detalles del vino", 500, error);
+      this.error(res, "Error al eliminar los detalles del vino", 500, error);
     }
   };
 }

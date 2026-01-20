@@ -10,7 +10,7 @@ export class UserController extends BaseController {
     this.userService = new UserService();
   }
 
-  public register = async (req: Request, res: Response): Promise<void> => {
+  public register = async (req: Request, res: Response) => {
     try {
       const { user, token } = await this.userService.register(req.body);
 
@@ -26,12 +26,12 @@ export class UserController extends BaseController {
         is_admin: user.is_admin,
       };
 
-      this.sendSuccess(res, userData, "Usuario registrado con éxito", 201);
+      this.success(res, userData, null, "Usuario registrado con éxito", 201);
     } catch (error: any) {
       if (error.message.includes("ya esta en uso")) {
-        return this.sendError(res, error.message, 409);
+        return this.error(res, error.message, 409);
       }
-      this.sendError(res, "Error al registrar el usuario", 500, error);
+      this.error(res, "Error al registrar el usuario", 500, error);
     }
   };
 
@@ -51,9 +51,10 @@ export class UserController extends BaseController {
         is_admin: user.is_admin,
       };
 
-      this.sendSuccess(res, userData, "Inicio de sesión exitoso");
+      this.success(res, userData, null, "Inicio de sesión exitoso", 200);
     } catch (error: any) {
-      this.sendError(res, error.message, 401);
+      this.error(res, error.message, 401);
+      console.log(error);
     }
   };
 
@@ -64,19 +65,19 @@ export class UserController extends BaseController {
     res.sendStatus(200);
   };
 
-  public profile = async (req: Request, res: Response): Promise<void> => {
+  public profile = async (req: Request, res: Response) => {
     try {
       // El middleware 'authRequired' ya ha verificado el token y adjuntado el usuario a req.user
       const user = req.user;
 
       if (!user) {
         // Esta comprobación es redundante si authRequired funciona, pero es una buena salvaguarda.
-        return this.sendError(res, "No autorizado, usuario no encontrado en la solicitud", 401);
+        return this.error(res, "No autorizado, usuario no encontrado en la solicitud", 401);
       }
 
-      this.sendSuccess(res, user, "Perfil de usuario obtenido con éxito");
+      this.success(res, user, null, "Perfil de usuario obtenido con éxito", 200);
     } catch (error: any) {
-      this.sendError(res, "Error al obtener el perfil", 500, error);
+      this.error(res, "Error al obtener el perfil", 500, error);
     }
   };
 
@@ -84,7 +85,7 @@ export class UserController extends BaseController {
     // El middleware 'authRequired' ya ha verificado el token y el usuario.
     // Si llegamos aquí, el token es válido. Simplemente devolvemos los datos del usuario.
     if (req.user) {
-      this.sendSuccess(res, req.user, "Token verificado");
+      this.success(res, req.user, null, "Token verificado", 200);
     }
   };
 }

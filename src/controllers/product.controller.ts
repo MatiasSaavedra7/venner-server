@@ -37,46 +37,45 @@ export class ProductController extends BaseController {
         sort: sort as string | undefined,
       };
 
-      const paginatedProducts = await this.productService.getAllProducts(
-        options
-      );
-      this.sendSuccess(res, paginatedProducts);
-    } catch (error) {
-      this.sendError(res, "Error al obtener los productos", 500, error);
-    }
-  };
+      const { products, meta } = await this.productService.getAll(options);
 
-  public getWines = async (req: Request, res: Response) => {
-    try {
-      const wines = await this.productService.getWines();
-      this.sendSuccess(res, wines);
+      this.success(res, products, meta, "Productos obtenidos con éxito", 200)
     } catch (error) {
-      this.sendError(res, "Error al obtener los vinos", 500, error);
+      console.log(error)
+      this.error(res, "Error al obtener los productos", 500, error);
     }
   };
 
   public getById = async (req: Request, res: Response) => {
     try {
+      // Capturar el ID del Producto
       const id = Number(req.params.id);
+
+      // Obtener el Producto
       const product = await this.productService.getProductById(id);
+
+      // Validar si el Producto existe
       if (!product) {
-        return this.sendError(res, "Producto no encontrado", 404);
+        return this.error(res, "Producto no encontrado", 404);
       }
-      this.sendSuccess(res, product);
+
+      this.success(res, product, null, "Producto obtenido con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al obtener el producto", 500, error);
+      this.error(res, "Error al obtener el producto", 500, error);
     }
   };
 
   public create = async (req: Request, res: Response) => {
     try {
+      // Crear el Producto
       const product = await this.productService.createProduct(req.body);
-      this.sendSuccess(res, product, "Producto creado con éxito", 201);
+
+      this.success(res, product, null, "Producto creado con éxito", 201);
     } catch (error: any) {
       if (error.message.includes("required")) {
-        return this.sendError(res, error.message, 400);
+        return this.error(res, error.message, 400);
       }
-      this.sendError(res, "Error al crear el producto", 500, error);
+      this.error(res, "Error al crear el producto", 500, error);
     }
   };
 
@@ -85,11 +84,11 @@ export class ProductController extends BaseController {
       const id = Number(req.params.id);
       const product = await this.productService.updateProduct(id, req.body);
       if (!product) {
-        return this.sendError(res, "Producto no encontrado", 404);
+        return this.error(res, "Producto no encontrado", 404);
       }
-      this.sendSuccess(res, product, "Producto actualizado con éxito");
+      this.success(res, product, null, "Producto actualizado con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al actualizar el producto", 500, error);
+      this.error(res, "Error al actualizar el producto", 500, error);
     }
   };
 
@@ -98,11 +97,11 @@ export class ProductController extends BaseController {
       const id = Number(req.params.id);
       const deleted = await this.productService.deleteProduct(id);
       if (!deleted) {
-        return this.sendError(res, "Producto no encontrado", 404);
+        return this.error(res, "Producto no encontrado", 404);
       }
-      this.sendSuccess(res, null, "Producto eliminado con éxito");
+      this.success(res, null, null, "Producto eliminado con éxito", 200);
     } catch (error) {
-      this.sendError(res, "Error al eliminar el producto", 500, error);
+      this.error(res, "Error al eliminar el producto", 500, error);
     }
   };
 }
