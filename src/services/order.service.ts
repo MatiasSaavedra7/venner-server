@@ -79,7 +79,7 @@ export class OrderService {
   }
 
   public async getOrdersByUser(userId: number) {
-    const orders = await this.orderRepository.findByUserId(userId);
+    const { orders, total } = await this.orderRepository.findByUserId(userId);
 
     if (!orders) {
       throw new Error("No se encontraron ordenes para el usuario");
@@ -95,13 +95,26 @@ export class OrderService {
       });
     }
 
-    return ordersWithItems;
+    return {
+      pagination: {
+        total_orders: total,
+        total_pages: Math.ceil(total / 10),
+        page: 1,
+        limit: 10,
+      },
+      data: ordersWithItems,
+    };
   }
 
-  public async getOrderById(orderId: number) {
+  public async getOrderById(orderId: number, userId: number, isAdmin: boolean) {
     const order = await this.orderRepository.findById(orderId);
     if (!order) {
       throw new Error("No se encontro la orden");
+    }
+
+    // Verificar si el usuario es dueño de la orden o es admin
+    if (order.user_id !== userId && !isAdmin) {
+      throw new Error("Acceso denegado: No tienes permiso para ver esta orden");
     }
 
     const items = await this.orderItemRepository.findByOrderId(orderId);
@@ -126,13 +139,13 @@ export class OrderService {
     }
 
     return {
-      data: ordersWithItems,
       pagination: {
-        total,
+        total_orders: total,
+        total_pages: Math.ceil(total / limit),
         page,
         limit,
-        total_pages: Math.ceil(total / limit)
-      }
+      },
+      data: ordersWithItems,
     };
   }
 }
