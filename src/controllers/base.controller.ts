@@ -1,31 +1,45 @@
 import { Response } from "express";
 
+interface PaginationMeta {
+  total: number;
+  per_page: number;
+  current_page: number;
+  total_pages: number;
+}
+
 export abstract class BaseController {
   // Método para manejar respuestas exitosas
-  protected sendSuccess(
+  protected success<T>(
     res: Response,
-    data: any,
-    message: string = "Success",
+    data: T,
+    meta?: PaginationMeta | null,
+    message?: string | null,
     statusCode: number = 200
-  ): void {
-    res.status(statusCode).json({
+  ): Response {
+    return res.status(statusCode).json({
       success: true,
-      message,
+      message: message || null,
+      meta: meta || null,
       data,
+      timestamp: new Date().toISOString(),
     });
   }
 
   // Método para manejar respuestas de error
-  protected sendError(
+  protected error(
     res: Response,
-    message: string = "Internal Server Error",
-    statusCode: number = 500,
-    error?: any
-  ): void {
-    res.status(statusCode).json({
+    message: string,
+    status_code: number = 500,
+    details: any = null
+  ): Response {
+    return res.status(status_code).json({
       success: false,
-      message,
-      error,
+      error: {
+        code: status_code,
+        message,
+        details
+      },
+      timestamp: new Date().toISOString(),
     });
   }
 }
