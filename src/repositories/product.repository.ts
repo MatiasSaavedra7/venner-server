@@ -10,8 +10,7 @@ export class ProductRepository extends BaseRepository<Product> {
     minPrice?: number;
     maxPrice?: number;
     sort?: string;
-    winesOrCategoryOne?: boolean;
-  }): Promise<Product[] | { products: Product[]; total: number }> {
+  }): Promise<{products: Product[]; total: number }> {
     const {
       limit,
       offset,
@@ -20,7 +19,6 @@ export class ProductRepository extends BaseRepository<Product> {
       minPrice,
       maxPrice,
       sort,
-      winesOrCategoryOne,
     } = options || {};
 
     const whereClauses: string[] = [];
@@ -54,11 +52,6 @@ export class ProductRepository extends BaseRepository<Product> {
       whereClauses.push(`p.price <= $${paramIndex}`);
       queryParams.push(maxPrice);
       paramIndex++;
-    }
-
-    // Filtro especial para vinos o categoria 1
-    if (winesOrCategoryOne) {
-      whereClauses.push(`(p.is_wine = true OR p.category_id = 1)`);
     }
 
     const whereString =
@@ -102,6 +95,7 @@ export class ProductRepository extends BaseRepository<Product> {
       ${whereString}
     `;
 
+
     const finalParams = [...queryParams];
     if (limit !== undefined && offset !== undefined) {
       finalParams.push(limit, offset);
@@ -109,22 +103,25 @@ export class ProductRepository extends BaseRepository<Product> {
 
     const result = await this.db.query(sql, finalParams);
 
+    // Si no hay limit/offset, el total es simplemente el numero de resultados
+    let total = result.rows.length;
+
     if (limit !== undefined && offset !== undefined) {
       const countResult = await this.db.query(countSql, queryParams);
-      return {
-        products: result.rows,
-        total: parseInt(countResult.rows[0].count, 10),
-      };
+      total = parseInt(countResult.rows[0].count, 10);
     }
 
-    return result.rows;
+    return { products: result.rows, total };
   }
 
   public async findById(id: number): Promise<Product | null> {
     const sql = `
-      SELECT p.*, c.name as category_name,
+      SELECT p.*, 
+      w.varietal, w.winery, w.country, w.province, w.location,
+      c.name as category_name,
       (SELECT url FROM images_product ip WHERE ip.product_id = p.id LIMIT 1) as image
       FROM products p
+      LEFT JOIN wines w ON p.id = w.product_id
       LEFT JOIN categories c ON p.category_id = c.id
       WHERE p.id = $1;
     `;
@@ -133,7 +130,23 @@ export class ProductRepository extends BaseRepository<Product> {
     if (result.rows.length === 0) {
       return null;
     }
-    return result.rows[0];
+
+    const product = result.rows[0];
+
+    // Si no es un vino, eliminar los campos de vino que vienen en null
+    if (!product.is_wine) {
+      const wineFields = [
+        "varietal",
+        "winery",
+        "country",
+        "province",
+        "location",
+      ];
+      wineFields.forEach((field) => delete product[field]);
+      delete product["is_wine"];
+    }
+
+    return product;
   }
 
   public async create(data: Partial<Product>): Promise<Product> {
@@ -185,9 +198,11 @@ export class ProductRepository extends BaseRepository<Product> {
       WHERE id = $2 AND stock >= $1;
     `;
     const result = await this.db.query(sql, [quantity, id]);
-    
+
     if ((result.rowCount ?? 0) === 0) {
-        throw new Error(`No se pudo actualizar el stock del producto ${id}. Puede que no haya suficiente stock.`);
+      throw new Error(
+        `No se pudo actualizar el stock del producto ${id}. Puede que no haya suficiente stock.`
+      );
     }
   }
 }
