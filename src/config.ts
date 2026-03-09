@@ -23,6 +23,11 @@ export const ADMIN_PASSWORD = getEnv("ADMIN_PASSWORD");
 
 export const FRONTEND_URL = getEnv("FRONTEND_URL");
 
+// Cloudinary
+export const CLOUDINARY_CLOUD_NAME = getEnv("CLOUDINARY_CLOUD_NAME");
+export const CLOUDINARY_API_KEY = getEnv("CLOUDINARY_API_KEY");
+export const CLOUDINARY_API_SECRET = getEnv("CLOUDINARY_API_SECRET");
+
 if (isNaN(DB_PORT)) {
   console.error("Error: La variable de entorno DB_PORT debe ser un número.");
   process.exit(1);

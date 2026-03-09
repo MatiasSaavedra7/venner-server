@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { BaseController } from "./base.controller";
 import { ImageProductService } from "../services/image_product.service";
+import { ImageProduct } from "../models/image_product.model";
 
 export class ImageProductController extends BaseController {
   private imageService: ImageProductService;
@@ -34,12 +35,27 @@ export class ImageProductController extends BaseController {
 
   public create = async (req: Request, res: Response) => {
     try {
-      const image = await this.imageService.createImage(req.body);
-      this.success(res, image, null, "Imagen agregada con éxito", 201);
-    } catch (error: any) {
-      if (error.message.includes("required")) {
-        return this.error(res, error.message, 400);
+      const cloudinaryUrls = req.body.cloudinaryUrls;
+      const productId = Number(req.params.id);
+
+      if (cloudinaryUrls.length === 0) {
+        console.log("No se subieron imagenes");
+        return this.error(res, "No se subieron imagenes", 400);
       }
+
+      const images: ImageProduct[] = [];
+
+      for (const url of cloudinaryUrls) {
+        const image = await this.imageService.createImage({
+          product_id: productId,
+          url: url,
+          alt_text: "Imagen del producto",
+        });
+        images.push(image);
+      }
+
+      this.success(res, images, null, "Imagenes agregadas con exito", 201);
+    } catch (error: any) {
       this.error(res, "Error al agregar la imagen", 500, error);
     }
   };

@@ -14,18 +14,27 @@
     "db:drop": "ts-node src/database/drop.ts",
     "db:create-admin": "ts-node src/scripts/create-admin.ts"
   },
-  "keywords": ["node", "express", "typescript", "postgresql"],
+  "keywords": [
+    "node",
+    "express",
+    "typescript",
+    "postgresql"
+  ],
   "author": "Matias Saavedra",
   "license": "ISC",
   "dependencies": {
+    "@types/multer": "^2.0.0",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.9.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
+    "multer": "^2.0.2",
     "pg": "^8.16.3",
+    "sharp": "^0.34.5",
     "zod": "^4.3.4"
   },
   "devDependencies": {
